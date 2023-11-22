@@ -33,8 +33,6 @@ jobs:
         registry: ghcr.io
         username: ${{github.actor}}
         password: ${{ secrets.GITHUB_TOKEN }}
-        #username: jenkins-arvato
-        #password: ${{ secrets.CR_PAT }}
     - name: Build and Push Latest
       uses: docker/build-push-action@v4
       if: github.ref == 'refs/heads/main'
@@ -42,8 +40,8 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         pull: true
-        tags: ghcr.io/arvatoaws-labs/docker-setup-runtime-storage:latest
-        cache-from: type=registry,ref=ghcr.io/arvatoaws-labs/docker-setup-runtime-storage:latest
+        tags: ghcr.io/arvatoaws-labs/setup-runtime-storage:latest
+        cache-from: type=registry,ref=ghcr.io/arvatoaws-labs/setup-runtime-storage:latest
         cache-to: type=inline
     - name: Build and Push Dev
       uses: docker/build-push-action@v4
@@ -52,6 +50,6 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         pull: true
-        tags: ghcr.io/arvatoaws-labs/docker-setup-runtime-storage:dev
-        cache-from: type=registry,ref=ghcr.io/arvatoaws-labs/docker-setup-runtime-storage:dev
+        tags: ghcr.io/arvatoaws-labs/setup-runtime-storage:dev
+        cache-from: type=registry,ref=ghcr.io/arvatoaws-labs/setup-runtime-storage:dev
         cache-to: type=inline

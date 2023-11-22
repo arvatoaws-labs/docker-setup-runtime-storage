@@ -41,33 +41,4 @@ MOUNT_POINT="${ROOT_PATH}/mnt/${MD_NAME}"
 mkdir -p "${MOUNT_POINT}"
 mount "${MD_DEVICE}" "${MOUNT_POINT}"
 
-# Keep track of whether we can unmount the array later. This depends on the
-# version of Bottlerocket.
-should_umount="no"
-
-# Bind state directories to the array, if they exist.
-for state_dir in containerd docker kubelet ; do
-  # The correct next step depends on the version of Bottlerocket, which can be
-  # inferred by inspecting the mounts available to the bootstrap container.
-  if findmnt "${ROOT_PATH}/var/lib/${state_dir}" ; then
-    # For Bottlerocket >= 1.9.0, the state directory can be bind-mounted over
-    # the host directory and the mount will propagate back to the host.
-    mkdir -p "${MOUNT_POINT}/${state_dir}"
-    mount --rbind "${MOUNT_POINT}/${state_dir}" "${ROOT_PATH}/var/lib/${state_dir}"
-    mount --make-rshared "${ROOT_PATH}/var/lib/${state_dir}"
-    should_umount="yes"
-  elif [ ! -L "${ROOT_PATH}/var/lib/${state_dir}" ] ; then
-    # The host directory does not exist, so the target directory likely needs
-    # to be created.
-    mkdir -p "${MOUNT_POINT}/${state_dir}"
-  fi
-  # Any host directory has been dealt with and the symlink can be created.
-  ln -snfT "/mnt/${MD_NAME}/${state_dir}" "${ROOT_PATH}/var/lib/${state_dir}"
-done
-
-# When using bind mounts, the parent directory where the array is mounted can
-# be unmounted. This avoids a second, redundant mount entry under `/mnt` for
-# every new mount in one of the state directories.
-if [ "${should_umount}" == "yes" ] ; then
-  umount "${MOUNT_POINT}"
-fi
+chmod 777 ${MOUNT_POINT}

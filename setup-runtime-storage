@@ -31,8 +31,8 @@ else
 fi
 
 # Format the array if not already formatted.
-if ! blkid --match-token TYPE=ext4 "${MD_DEVICE}" ; then
-  mkfs.ext4 "${MD_DEVICE}"
+if ! blkid --match-token TYPE=xfs "${MD_DEVICE}" ; then
+  mkfs.xfs "${MD_DEVICE}"
 fi
 
 MOUNT_POINT="${ROOT_PATH}/mnt/${MD_NAME}"
